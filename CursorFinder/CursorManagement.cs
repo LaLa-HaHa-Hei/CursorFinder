@@ -1,5 +1,6 @@
 ﻿using System.Runtime.InteropServices;
 using System.Drawing;
+using System.IO;
 
 namespace CursorFinder
 {
@@ -56,18 +57,22 @@ namespace CursorFinder
         /// <returns>返回光标图标的句柄</returns>
         public static IntPtr LoadCursorImageFile(string cursorFilePath)
         {
+            string tempFilePath = @".\temp-cursor.cur";
+            File.Copy(cursorFilePath, tempFilePath, overwrite: true);
             // 加载自定义光标
             int width = 0;
             int height = 0;
             try
             {
-                using var icon = new Icon(cursorFilePath);
+                using var icon = new Icon(tempFilePath);
                 width = icon.Width;
                 height = icon.Height;
             }
             catch (ArgumentException)
             { }
-            return LoadImageByFile(IntPtr.Zero, cursorFilePath, IMAGE_CURSOR, width, height, LR_LOADFROMFILE);
+            IntPtr hCursor = LoadImageByFile(IntPtr.Zero, tempFilePath, IMAGE_CURSOR, width, height, LR_LOADFROMFILE);
+            File.Delete(tempFilePath);
+            return hCursor;
         }
 
         /// <summary>
