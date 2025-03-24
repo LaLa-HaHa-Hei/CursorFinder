@@ -197,7 +197,7 @@ public partial class MainWindow : Window
         uint vk = HotKeyManagement.GetVirtualKeyByName(LetterKey);
         _hotKeyManagement = new(_windowHandle, 0xBFFF, modifier, vk);
         _hotKeyManagement.Register();
-        _hotKeyManagement.OnHotKeyPressedEvent += () =>
+        _hotKeyManagement.OnHotKeyPressed += () =>
         {
             if (_isCustomCursorImage)
                 ShowDefaultCursor();

@@ -11,9 +11,6 @@ namespace CursorFinder
         private static extern bool UnregisterHotKey(IntPtr hWnd, int id);
         [DllImport("user32.dll")]
         private static extern uint MapVirtualKey(uint uCode, uint uMapType);
-
-        public delegate void OnHotKeyPressed();
-
         public bool IsRegistered { get; private set; } = false;
 
         private const int WM_HOTKEY = 0x0312;
@@ -26,15 +23,8 @@ namespace CursorFinder
         private readonly uint _fsModifiers;
         private readonly uint _vk;
         private bool _disposed = false;
-
-        private OnHotKeyPressed _onHotKeyPressed;
-
-        public event OnHotKeyPressed OnHotKeyPressedEvent
-        {
-            add => _onHotKeyPressed += value;
-
-            remove => _onHotKeyPressed -= value;
-        }
+        
+        public event Action? OnHotKeyPressed;
 
         public HotKeyManagement(nint handle, int id, uint fsModifiers, uint vk)
         {
@@ -109,7 +99,7 @@ namespace CursorFinder
         {
             if (msg == WM_HOTKEY && wParam.ToInt32() == _id)
             {
-                _onHotKeyPressed?.Invoke();
+                OnHotKeyPressed?.Invoke();
                 handled = true;  // 标记消息已处理
             }
             else
